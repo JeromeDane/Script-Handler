@@ -1,0 +1,481 @@
+<!-- 
+/* Blank Canvas Script Handler [http://blankcanvas.me/contact/]
+ * Copyright (c) 2009, 2010 Jerome Dane <http://blankcanvas.me/contact/>  
+ * 
+ * This file is part of the Blank Canvas Script Handler. See readme.md for
+ * more information, credits, and author requests. 
+ * 
+ * BC Script Handler is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+ -->
+<html>
+	<head>
+		<title>Blank Canvas Script Handler</title>
+		<link id="favicon" rel="shortcut icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAArZJREFUeNqEU19IU2EUP/e7273u393uvbtzosuVWbaWmZYVUj5EED3lS4QkFGkRBL35UPSUD0kPQi+BD5VPPWW9KggRFEmJuLZppk3dxKn767a77c7v3u40xdikA4fDB+f78Tu/8zuEoihQjOHhYSDUyvNWsNlssLoahngyQTfUH3HxFk5OZ0VvJBLB8DfOnG3dqgj2CYIgOKQQfVqNZkx9jm4WCtfK9Wn2+e8ERXl5wOG4wll4CIWWQGXQRSLNu/8DEIQzsr7+hmXM7Q5HLayvrcJ84HfO4XSOVNA07IxcAqBSLmrg2MznBzkL215VVQ3ReBQ8s9PAs9wLgeMHNTS13bwHY1eDTCbT7Z+ZHvL6flzmrQJksiL4J7+DKZoAm549B4isIwkESE2SIEsZTE1NPcVYtmOWBa/fC3oJQ2pyDjJzS2CMhi7qOq4PKTR7T53Bo+yhsAtQWVlJGnR6sKlrjObCsCiG4ZO2BXIOPTw5/Bpo1KqyEDoRYA/IZTRwu90DGOMbjN7YuFwowIeNccDaFNxsW4CDbhmypG5Cg8iRfD7XW8gXguqXt/9oQNH0M6qC7kIkmqg21IBVqoVm+zfoOOkDTHYGkM71IJ8TL/2ane33+329JQzk4n4U8Eh4s4ehDK8eXbjflMwGISiJC1W25jsEQbbNeD2P4/HYPG+1vi/1wdZ+lWKdTOXFLiKDho7Wnq7T0LpbkpSt/+n3PY/FYkHXcVc3wzBfSwAUvG1zrGDQIlgZH/8STmwkk80tLTWBwFxfNBJZaWw8cdtkZj4qcpktyDsOU6ucww95Xri6tLCYjsUS502Mce2Y29XDWixjkiQVbVdqJLPJtJOI0tKHBLsdUmLGqM4ccTW47vI8P4qLLIl9boGiqF0yer1hILS8bBQEAZ1qaupnOfZzWkyXvbo/AgwAuGEcLbN6DX0AAAAASUVORK5CYII%3D" type="image/x-icon"> 
+		<script src="includes/jquery.js"></script>
+		<script src="includes/database.js"></script>
+		<script src="includes/md5.js"></script>
+		<script src="includes/extension.js"></script>
+		<script src="includes/script.js"></script>
+		<script src="includes/common.js"></script>
+		<script src="includes/options.js"></script>
+		<style>
+			body { font-family:Arial, Helvetica, sans-serif; }
+			hr { margin:1em 0 1em 0; height:1px; border:none; border-bottom:1px solid #ccc; }
+			h2 { margin-top:2em; }
+			li { margin-bottom:.75em; }
+			ul { margin-top:.75em; }
+			th, td { padding:.5em; padding-right:1em; border-bottom:1px solid #ddd;
+				font-size:12px;
+				vertical-align:middle;
+			}
+			th { text-align:left;  border-bottom:1px solid #bbb; }
+			tr.even td { background-color:#efefef; }
+			.iconButton {
+				opacity:.7;
+				cursor:pointer;
+			}
+			.iconButton:hover {
+				opacity:1;
+			}
+			a { color:#005b9c; text-decoration:none; }
+			a:hover { text-decoration:underline; }
+			p a { text-decoration:underline; }
+			p a:hover { text-decoration:none; }
+			#scriptTableWrapper table { width:100%; }
+			.center { text-align:center; }
+			#optionsTabs { 
+				margin-bottom:0;
+				width:100%;
+				float:left;
+				height:28px;
+			}
+			#optionsTabs div {
+				background-color:#ddd;
+				height:20px;
+				border:1px outset #ccc;
+				border-bottom:none;
+				-webkit-border-radius: 6px 6px 0 0;
+				float:left;
+				padding:.5em 1em .3em 1em;
+				cursor:pointer;
+				z-index:0;
+			}
+			#optionsTabs div.active { 
+				background-color:#eee;
+				position:relative;
+				font-weight:bold; 
+				z-index:0;
+				top:-1px;
+				cursor:inherit;
+			}
+			#optionsTabs div.active:hover { background-color:#eee; }  
+			#optionsTabs div:hover {
+				background-color:#fff;
+			}
+			#optionsWindow { 
+				border:1px outset #ccc;
+				-webkit-border-radius: 0 10px 10px 10px;
+				background-color:#eee;
+				width:100%;
+				float:left;
+				margin-bottom:3em;
+			}
+			#optionsWindow .tabContent { 
+				border:1px inset #ccc;
+				margin:1em .75em; 
+				margin-bottom:.5em;
+				background-color:#fff;
+				padding:1em;
+				padding-bottom:0;
+				z-index:0;
+				display:none;
+			}
+			#optionsWindow .content .tabContent { display:none; } 
+			#scriptTableWrapper { 
+				position:relative; overflow:auto; border:1px inset #ccc; 
+				background-color:#fff; 
+			}
+			#scriptTableWrapper table tr:hover td { background-color:#d9e4fc; }
+			#scriptListHeadWrapper { 
+				max-height:2em;
+				overflow:hidden; 
+			}
+			#editScriptWrapper textarea { width:100%; height:550px; padding:.5em; } 
+			#editScriptWrapper p { margin-bottom:.5em; cursor:pointer; } 
+			#editScriptWrapper p img { vertical-align:middle; position:relative; top:-2px; } 
+			.button { 
+				border:1px outset #aaa;
+				padding:.2em .5em;
+				text-decoration:none;
+				-webkit-border-radius:4px;
+				background-color:#ddd;
+				color:#333;
+				background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAUCAIAAADDbMD2AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAADhJREFUeNpUyzEKADAIBEHv0vr/h2oliAYDCaQaWNiVmYwIjgDY3ayqp4gczezr4zxXVYW7bwEGAOtJMo1OD3YAAAAAAElFTkSuQmCC); 
+				border:1px solid #707070; 
+				margin-left:.5em;
+				font-family:Arial;
+			}
+			.button img { vertical-align:middle; position:relative; top:-2px; height:12px; }
+			#resourceListImageWrapper img { max-height:100px; }
+			.button:hover {
+				background-color:#eee;
+				border-color:#3c7fb1;
+				
+			} 
+			.button:active {
+				background-color:#fff;
+				
+			} 
+			.indent { margin-left:2em; }
+		</style>
+	</head>
+	<body>
+		<div style="margin:2em auto; width:1000px; font-family:Arial, sans-serif; font-size:small;">
+			
+			
+			
+			<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=F62KT3YK3GBA8" target="_blank" title="Like this extension? Help support its continued development by making a donation.">
+				<img src="" id="contributeButton" style="float:right; margin-top:1em;"/>
+			</a>
+			
+			<img class="bcScriptHandlerLogo" style="float:left; margin:0 1em 2em 0;"/>
+			
+			<h1>Blank Canvas Script Handler<br/>
+				<span style="font-size:12px; font-weight:normal;">by Jerome Dane</span>
+			</h1>
+			<div id="optionsTabs">
+				<div id="tabList" onclick="showTab(this)" class="active">Installed Scripts</div>
+				<div id="tabOptions" onclick="showTab(this)">Options</div>
+				<div id="tabBugs" onclick="showTab(this)">Known Bugs</div>
+				<div id="tabTodo" onclick="showTab(this)">To Do</div>
+				<div id="tabAbout" onclick="showTab(this)">About</div>
+			</div>
+			<div id="optionsWindow">
+				<div id="tabListContent" class="tabContent" style="display:block; padding:0; border:none;">
+					<div id="scriptListWrapper" style="border:1px inset #ccc;">
+						<div id="noScriptsWrapper" style="padding:1em;">
+							<p>You do not have any installed scripts. Get user scripts at 
+								<a href="http://www.userscripts.org" target="_blank">userscripts.org</a>.
+							</p>
+						</div>
+						<div id="scriptsFoundWrapper" style="display:none; padding:1em;">
+							<div id="scriptListHeadWrapper">
+								<table cellpadding="0" cellspacing="0" border="0" style="width:100%;" id="scriptListHead"></table>
+							</div>
+							<div id="scriptTableWrapper"></div>
+							<p style="margin-bottom:0; text-align:right;">Get more scripts at 
+								<a href="http://userscripts.org" target="_blank">userscripts.org</a>
+							</p>
+						</div>
+					</div>
+					<div id="editScriptWrapper" style="display:none; margin:0; background-color:#eee;">
+						<textarea id="scriptEditor" wrap="off"></textarea>
+						<div id="requireListWrapper">
+							<div style="margin-top:2em; margin-bottom:1em;"><strong>Required Files</strong></div>
+							<div id="editRequiresWrapper"></div>
+						</div>
+						<div id="resourceListWrapper">
+							<p style="margin-top:2em; margin-bottom:1.5em;"><strong>Resources</strong></p>
+							<div id="resourceListImageWrapper" style="margin-left:2em;"></div>
+						</div>
+					</div>
+				</div>
+				
+				<div id="tabOptionsContent" class="tabContent">
+					<h2 style="margin-top:1em;">General Settings</h2>
+					<div class="indent">
+						<p><strong>Install Anywhere</strong>
+							<input type="checkbox" id="optionInstallAnywhere"  onclick="setOption('installAnywhere', this.checked);"/>
+							- turns links ending in ".user.js" on any page into install script links
+						</p>
+					</div>
+					<div style="width:50%; float:left;">
+						<h2>Script List Settings</h2>
+						<div class="indent">
+							<p><strong>Maximum List Height</strong>
+								<select id="optionMaxListHeight" onchange="maxListHeight = parseInt(this.value); setOption('maxListHeight', parseInt(this.value)); scriptListUpdated = false;">
+									<option value="511">500 pixels</option>
+									<option value="9999">Unlimited</option>
+								</select>
+							</p>
+							<p><strong>Show Versions</strong>: <input type="checkbox" id="optionShowVersions" onclick="setOption('showVersions', this.checked); scriptListUpdated = false;"/></p>
+							<p><strong>Show Sites</strong>: <input type="checkbox" id="optionShowSites" onclick="setOption('showSites', this.checked); scriptListUpdated = false;"/></p>
+							<p><strong>Show Features</strong>: <input type="checkbox" id="optionShowFeatures" onclick="setOption('showFeatures', this.checked); scriptListUpdated = false;"/></p>
+						</div>
+					</div>
+					<div style="width:50%; float:left;">
+						<h2>New Script Default Settings</h2>
+						<div class="indent">
+							<p>The following default settings will be used when creating new scripts.</p>
+							<p><strong>Script Name</strong>: <input id="optionDefaultScriptName" onkeyup="setOption('defaultScriptName', this.value)"/></p>
+							<p><strong>Description</strong>: <input id="optionDefaultDescription" onkeyup="setOption('defaultDescription', this.value)"/></p>
+							<p><strong>Author's Name</strong>: <input id="optionDefaultAuthor" onkeyup="setOption('defaultAuthor', this.value)"/></p>
+							<p><strong>@include</strong>: <input id="optionDefaultInclude" onkeyup="setOption('defaultInclude', this.value)"/></p>
+							<p><strong>Version</strong>: <input id="optionDefaultVersion" onkeyup="setOption('defaultVersion', this.value)"/></p>
+						</div>
+					</div>
+					<p style="clear:left; padding-top:2em; text-align:right;">Note: options are automatically saved as they are changed.</p>
+				</div>
+				<div id="tabBugsContent" class="tabContent">
+					<p>The following is a list of currently known bugs.</p>
+					<ul>
+						<li>There is little support for the unsafeWindow object because Chrome blocks access to page JavaScript for security</li>
+						<li>Does not support @resource yet</li>
+						<li>Does not process GM_getResourceURL yet</li>
+						<li>Does not process GM_getResourceText yet</li>
+						<li>Does not process GM_registerMenuCommand yet</li>
+					</ul>
+					<p style="text-align:right;">To submit a bug not in the list, please 
+						<a href="http://blankcanvasweb.com/forums/topic/id_499/n_read_first_reporting_bugs/" target="_blank">post a report</a> in the forums.
+					</p>
+				</div>
+				<div id="tabTodoContent" class="tabContent">
+					<p>The following is a list of things that need to be done and features that are currently planned.</p>
+					<ul>
+						<li>Improve performance, especially when dealing with lots of saved scripts</li>
+						<li>Allow disabling of individual domains for each script by clicking on the script's site icons to gray them out</li>
+						<li>Display the names of disabled scripts in gray on the script list</li>
+						<li>Add support for @match syntax used instead of @include by chrome scripts</li>
+						<li>Add support for missing commands listed in known bugs</li>
+						<li>Add ability to edit scripts included through @require</li>
+						<li>Add some kind of script installation progress indicator</li>
+						<li>Add option to allow individual user scripts in incognito mode</li>
+						<li>Add option to hide extension button</li>
+						<li>Add support for @website to specift script website</li>
+						<li>Implement optional update checker for user scripts</li>
+						<li>Add support for @update to specift script update URL</li>
+						<li>Add number of scripts with an update available to extension button as badge</li>
+					</ul>
+					<p style="text-align:right;">To submit a suggestion for a feature or not listed here, please
+						<a href="http://blankcanvasweb.com/forums/id_53/n_suggestions__requests/" target="_blank">post a request</a> in the forums.
+					</p>
+				</div>
+				
+				<div id="tabAboutContent" class="tabContent">
+					<div style="width:300px; float:right; text-align:right;">
+						v<span class="versionWrapper"></span> &nbsp; 
+						[ <a href="http://blankcanvasweb.com/pages/id_156/n_version_history/" target="_blank">version history</a> ]
+					</div>
+					<h2 style="margin-top:0;"><a href="http://blankcanvasweb.com/pages/id_143/n_chrome_script_handler/" target="_blank">Blank Canvas Script Handler</a>
+					</h2>
+					<div class="indent">
+						<p>This extension lets you customize web sites by running bits of JavaScript on pages. It's kind of an unofficial Greasemonkey for Chrome, and supports many of the GM_* functions used in most scripts. It is still in the early stages of development, basically in alpha (notice the 0.0.* version.)</p> 
+						<p>Chrome supports installing scripts as extensions, but it does not support most of the syntax script writers have been using for years. This extension and attempts to address this by supporting most <a href="http://wiki.greasespot.net/Greasemonkey_Manual:API">Greasemonkey functions</a>.</p>
+						<p>I started this project because I was not able to find a <a href="https://addons.mozilla.org/en-US/firefox/addon/748/">Greasemonkey</a> substitute for Chrome at the time. I have since been referred to Tampermonkey. It looks like a good extension, and from the source code, it seems very well written, but it does not do what I want as far as the interface goes.</p>
+						<p>I've gotten comments suggesting I stop this project work with others involved in similar projects. This makes sense on paper, but my goal is not to provide a perfect product, but rather to have fun making it, learn along the way, and end up with something I find useful.</p>
+						<p>I am making this extension available for public use in case others enjoy it. I make no claims that this is the best script handler extension out there, nor the most elegantly written. This is just my take on the matter.</p>
+						<p>If you like this extension and find yourself using it a lot, consider <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=F62KT3YK3GBA8">making a donation</a> of any amount to show your support.</p>
+					</div>
+					<h2 style="margin-top:1em;">License &amp; EULA</h2>
+					<div class="indent">
+						<p>This extension is provided free of charge. You may use it for personal, business, or other activities as long as you are not using it to promote illegal content.</p>
+						<p>While we strive to provide the best possible bug-free application, there is no way to guarantee that it will be 100% risk-free.  By using this extension, you agree that it is at your own risk, and that Blank Canvas Productions, LLC is not liable for any loss or corruption of data, theft of private information, or any other problems resulting from the use of this extension.</p>
+						<p>Although it is "free to use", it is not "free code". 
+							This means that while you may modify the code in any for personal use, or study it to 
+							learn techniques for your own free or commercial projects, you may NOT, unless 
+							specifically noted within the source code, simply copy and paste code from this extension 
+							to your own work if you intend to redistribute or release it to the public.
+						</p>
+						<p>If you have analyzed the sourcecode and see a way in which it could be improved, please <a href="http://blankcanvasweb.com/contact_us">contact us</a> so that we
+							can encorporate your suggestions into an official release.
+						</p>
+					</div>						
+											
+				</div>
+				<p style="text-align:right; margin-right:1em;">
+					<span id="editScriptButtonWrapper" style="display:none;">
+						<a class="button" href="javascript:void(0);" onclick="saveCurrentScript()" id="saveScriptButton" style="display:none;" title="(CTRL + S)"/>
+							<img src="" id="saveScriptIcon"/> Save
+						</a>						
+						<a class="button" href="javascript:void(0);" onclick="saveCurrentScript(hideEdit);" id="saveCloseScriptButton" style="display:none;">
+							<img src="" id="saveCloseScriptIcon"/> Save &amp; Close
+						</a>						
+						<a class="button" href="javascript:void(0);"  onclick="hideEdit()" value="Cancel" id="editCloseButton">
+							<img src="" id="closeScriptIcon"/> <span id="editCloseButtonLabel">Close</span>
+						</a>						
+					</span>
+					<span id="savingNotice" style="display:none;">saving script ...</span>
+					<a href="javascript:void(0);" onclick="newScript()" class="button" id="newScriptButton">
+						<img src="" id="newScriptIcon"/> New Script
+					</a>
+				</p>
+			</div>
+			
+			
+			
+			<!--
+			<h2>Install Script from URL</h2>
+			<p><strong>Name</strong></p>
+			<p><textarea id="scriptContent" style="width:90%; height:30em;"></textarea></p>
+			<p><input type="button" id="saveScript" value="Save" onclick="save()"/> </p>
+			-->
+		</div>
+		<script>
+			
+			$('.versionWrapper').html(extension.version);
+			
+			$('#contributeImg').attr('src', chrome.extension.getURL("images/contribute.png"));
+			$('.bcScriptHandlerLogo').attr('src', chrome.extension.getURL("images/icon.png"));
+			$('#newScriptIcon').attr('src', chrome.extension.getURL("images/script_add.png"));
+			$('#contributeButton').attr('src', chrome.extension.getURL("images/contribute.png"));
+			$('#saveScriptIcon').attr('src', chrome.extension.getURL("images/disk.png"));
+			$('#closeScriptIcon').attr('src', chrome.extension.getURL("images/door_in.png"));
+			$('#saveCloseScriptIcon').attr('src', chrome.extension.getURL("images/door_in.png"));
+			
+			var debugMode = false;
+			if (debugMode) {
+				$('body').append('<h1 style="clear:both; margin-top:2em;">Scripts Table</h1>' + Database.getTable('scripts').getHtml());
+			}
+			
+			var currentScript = null;
+			var maxListHeight = getOption('maxListHeight', 511);
+			redrawScriptList();
+			
+			updateScriptListMaxHeight();
+			
+			$('#optionDefaultScriptName').attr('value', getOption('defaultScriptName', "My Script"));
+			$('#optionDefaultDescription').attr('value', getOption('defaultDescription', "A brief description of your script"));
+			$('#optionDefaultAuthor').attr('value', getOption('defaultAuthor', "Your Name"));
+			$('#optionDefaultInclude').attr('value', getOption('defaultInclude', "http://*"));
+			$('#optionDefaultVersion').attr('value', getOption('defaultVersion', "1.0"));
+			$('#optionShowVersions').attr('checked', getOption('showVersions', true));
+			$('#optionShowSites').attr('checked', getOption('showSites', true));
+			$('#optionShowFeatures').attr('checked', getOption('showFeatures', true));
+			$('#optionInstallAnywhere').attr('checked', getOption('installAnywhere', true));
+			$('#optionMaxListHeight option').each(function(i) {
+				if(this.value == getOption('maxListHeight', 5111))
+					$('#optionMaxListHeight').attr('selectedIndex', i);
+			});
+			
+/*
+
+			// load installed scripts
+			var installedScripts = localStorage['installedScripts'];
+			installedScripts = typeof(installedScripts) != 'object' ? {} : installedScripts;
+		
+			function saveScriptCode(id, code) {
+				localStorage['script_' + id] = JSON.stringify(code);
+			}
+			
+			function save() {
+				var code = document.getElementById('scriptContent').value;
+				saveScriptCode('test', code+"\r");
+			}
+			
+			document.getElementById('scriptContent').innerHTML = getScriptById('test').replace(/</g,"&lt;").replace(/>/g,"&gt;");
+*/
+
+
+function Resource(_record) {
+	_record = typeof(_record) == 'undefined' ? Database.getTable('resources').getNewRecord() : _record;
+	this.key;
+	this.__defineGetter__("key", function() {
+		var val = _record.getField('key');;
+		return val ? val : '';
+	}); 
+	this.__defineSetter__("key", function(val) {
+		_record.setField('key', val);
+	}); 
+	this.url;
+	this.__defineGetter__("url", function() {
+		var val = _record.getField('url');;
+		return val ? val : '';
+	}); 
+	this.__defineSetter__("url", function(val) {
+		_record.setField('url', val);
+	}); 
+	this.data;
+	this.__defineGetter__("data", function() {
+		var val = _record.getField('data');;
+		return val ? val : '';
+	}); 
+	this.__defineSetter__("data", function(val) {
+		_record.setField('data', val);
+	}); 
+	this.status;
+	this.__defineGetter__("status", function() {
+		var val = _record.getField('status');
+		return val ? val : '';
+	}); 
+	this.__defineSetter__("status", function(val) {
+		_record.setField('status', val);
+	}); 
+	this.headers;
+	this.__defineGetter__("headers", function() {
+		var val = _record.getField('headers');;
+		return val ? val : '';
+	}); 
+	this.__defineSetter__("headers", function(val) {
+		_record.setField('headers', val);
+	}); 
+}
+			function loadResource(resource, callback) {
+				// verify header and status
+				var xmlhttp = new XMLHttpRequest();
+				xmlhttp.open("HEAD", resource.url, true);
+				xmlhttp.onreadystatechange=function() {
+					if (xmlhttp.readyState == 4) {
+						resource.status = xmlhttp.status;
+						if (resource.status == 200) {
+							resource.headers = xmlhttp.getAllResponseHeaders();
+								if(resource.headers.match(/Content-Type:\d+image\//i)) {
+									var image = new Image();
+									image.src = resource.url;
+									image.onload = function() { 
+										var imgWidth = image.width;
+										var imgHeight = image.height;
+										var myCanvas = document.createElement("canvas");
+							  			var myCanvasContext = myCanvas.getContext("2d");
+										myCanvas.width = imgWidth;
+										myCanvas.height = imgHeight;
+										myCanvasContext.drawImage(image,0,0);
+										resource.data = myCanvas.toDataURL();;
+										resource.loaded = true;
+										callback(resource);
+									}
+								} else callback(resource);
+						} else
+							callback(resource);
+					}
+				}
+				xmlhttp.send(null);
+				res.responseCode = true;
+			}
+			var resource = new Resource();
+			resource.url = "http://www.google.com/images/srpr/nav_logo13.png";
+			resource.key = 'google';
+/*
+			loadResource(resource, function(res) {
+				alert(resource.headers)
+				$('body').prepend('<img src="' + res.url + '"/>');	
+				
+			})
+*/
+/*
+			chrome.extension.sendRequest({name: 'loadResource', resource:resource}, function(r) {
+				alert(r);
+				$('body').prepend('<img src="' + resource.base64 + '"/>');	
+			});
+	*/		
+			$('#scriptEditor').keydown(textareaKeyHandler);
+			
+			if(localStorage.getItem('startScriptEdit') && localStorage.getItem('startScriptEdit').toString().match(/^\d+$/)) {
+				var script = getScriptById(localStorage.getItem('startScriptEdit'));
+				editScript(script);
+				localStorage.setItem('startScriptEdit', false);
+			}
+		</script>
+	</body>
+</html>

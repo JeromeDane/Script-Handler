@@ -1,0 +1,107 @@
+<!-- 
+/* Blank Canvas Script Handler [http://blankcanvas.me/contact/]
+ * Copyright (c) 2009, 2010 Jerome Dane <http://blankcanvas.me/contact/>  
+ * 
+ * This file is part of the Blank Canvas Script Handler. See readme.md for
+ * more information, credits, and author requests. 
+ * 
+ * BC Script Handler is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+ -->
+<html> 
+<head> 
+<script src="includes/jquery.js"></script>
+<script src="includes/database.js"></script>
+<script src="includes/common.js"></script>
+<script src="includes/script.js"></script>
+<style>
+	body { font-family: Arial, sans-serif; 
+		font-size:small; white-space:nowrap;
+		padding:.5em 1em .5em 1em;
+		color:#444; 
+	}
+	#activeScriptsLabel { margin-right:30px; font-weight:bold; }
+	#optionsLink { float:right; cursor:pointer; opacity:.8; }
+	#optionsLink:hover { opacity:1; }
+	#findScriptsLink { cursor:pointer; }
+	#findScriptsLink:hover { text-decoration:underline; }
+	ul { margin-left:0; padding-left:0; list-style:none; }
+	li { padding:.15em .5em .35em .5em; }
+	li:hover { color:#000; background-color:#d4eaf7; }
+	li input { position:relative; top:2px; }
+	li img.toolIcon { float:right; position:relative; top:4px; height:14px; opacity:.4; cursor:pointer; margin-left:.3em; }
+	li img.toolIcon:hover { opacity:1; }
+</style>
+</head>
+<body>
+	<img id="optionsLink" class="cog" title="Options"/>
+	<p id="activeScriptsLabel"><span id="numActiveScripts"></span> script<span id="numActiveScriptsPlural"></span> for this page</p>
+	<ul id="activeScripts"></ul>
+	<p><span id="findScriptsLink">Find scripts for this page</span></p>
+	<script>
+		var $ = getJqueryInstance();
+		chrome.tabs.getSelected(null, function(tab) {
+			if(tab.url == chrome.extension.getURL("options.html"))
+				window.close();
+			if(tab.url == 'chrome://extensions/')
+				$('#findScriptsLink').hide();
+		});
+		try{ 
+			$('img.cog').attr('src', chrome.extension.getURL("images/cog.png"))
+			chrome.extension.sendRequest({name: 'getActiveScripts'}, function(scripts) {
+				$('#numActiveScripts').html(scripts.length > 0 ? scripts.length : 'No');
+				$('#numActiveScriptsPlural').html(scripts.length != 1 ? 's' : '');
+				for (var i = 0; i < scripts.length; i++) {
+					var script = getScriptById(scripts[i].id);
+					$('#activeScripts').append('<li>' + 
+						'<input id="enableToggle_' + script.id + '" type="checkbox" ' + (script.enabled ? 'checked="true"' : '') + '/> ' +
+						(script.website ? '<a href="' + script.website + '" target="_blank">' + script.name + '</a>' : script.name) +  
+						'<img class="delete toolIcon" title="Delete Script" id="delete_' + script.id + '"/>' +
+						'<img class="edit toolIcon" title="Edit Script" id="edit_' + script.id + '" style="margin-left:2em;"/>' +
+						'</li>');
+					$('#enableToggle_' + scripts[i].id).click(function() {
+						var id = this.id.match(/\d+/)[0];
+						chrome.extension.sendRequest({name: 'toggleScriptEnabled', scriptId:id});
+					});
+					$('#edit_' + scripts[i].id).click(function() {
+						var id = this.id.match(/\d+/)[0];
+						localStorage.setItem('startScriptEdit', id);
+						openOptionsTab();
+					});
+					$('#delete_' + scripts[i].id).click(function() {
+						var id = this.id.match(/\d+/)[0];
+						chrome.extension.sendRequest({name: 'deleteScriptById', scriptId:id});
+					});
+				}
+				$('img.edit').attr('src', chrome.extension.getURL("images/edit.png"))
+				$('img.delete').attr('src', chrome.extension.getURL("images/trash.png"))
+			});
+			$('#optionsLink').click(openOptionsTab);
+		} catch(e) { alert(e); }
+		$('#findScriptsLink').click(function() {
+			chrome.tabs.getSelected(null, function(tab) {
+				var q = tab.url.match(/https?:\/\/([^\/]+)\//)[1];
+				q = q.replace(/^www\./, '');
+				q = q.replace(/\.[A-Z]{2,4}$/i, '');
+				var matches = q.match(/\.(.+)$/); 
+				if(matches && matches[1].length > 3)
+					q = matches[1];
+				chrome.extension.sendRequest({name: 'openInTab', 
+					src:'http://userscripts.org/scripts/search?q=' + q
+				});
+			});
+		});
+	</script> 
+</body>
+</html> 
