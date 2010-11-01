@@ -1,0 +1,11 @@
+Blank Canvas Script Handler 
+License and End User License Agreement
+
+
+This extension is provided free of charge. You may use it for personal, business, or other activities as long as you are not using it to promote illegal content.
+
+While we strive to provide the best possible bug-free application, there is no way to guarantee that it will be 100% risk-free. By using this extension, you agree that it is at your own risk, and that Blank Canvas Productions, LLC is not liable for any loss or corruption of data, theft of private information, or any other problems resulting from the use of this extension.
+
+Although it is "free to use", it is not "free code". This means that while you may modify the code in any for personal use, or study it to learn techniques for your own free or commercial projects, you may NOT, unless specifically noted within the source code, simply copy and paste code from this extension to your own work if you intend to redistribute or release it to the public.
+
+If you have analyzed the sourcecode and see a way in which it could be improved, please contact us at http://blankcanvasweb.com/contact_us so that we can encorporate your suggestions into an official release.

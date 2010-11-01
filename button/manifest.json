@@ -1,0 +1,16 @@
+{
+	"name": "Blank Canvas Script Handler Button",
+	"version": "0.0.1",
+	"description": "Adds a browser button for the Blank Canvas Script Handler extension",
+	"icons": { "128": "images/icon.png" },
+	"background_page": "background.html",
+	"browser_action": {
+		"default_icon": "images/icon_small.png",
+		"popup": "popup.html"
+	},
+	"permissions": [
+		"tabs",
+		"http://*/*",
+		"https://*/*"
+	]
+}

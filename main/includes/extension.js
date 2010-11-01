@@ -1,5 +1,4 @@
-<!--  
-/* Blank Canvas Script Handler [http://blankcanvas.me/contact/]
+/* Blank Canvas Script Handler [http://blankcanvas.me/scripthandler/]
  * Copyright (c) 2009, 2010 Jerome Dane <http://blankcanvas.me/contact/>  
  * 
  * This file is part of the Blank Canvas Script Handler. See readme.md for
@@ -18,15 +17,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
--->
-
-<html>
-	<head>
-		<script src="includes/jquery.js"></script>
-		<script src="includes/database.js"></script>
-		<script src="includes/script.js"></script>
-		<script src="includes/common.js"></script>
-		<script src="includes/md5.js"></script>
-		<script src="includes/background.js"></script>
-	</head>
-</html>
+chrome.extension.__defineGetter__("version", function() {
+	return this.manifest.version;
+});
+chrome.extension.__defineGetter__("name", function() {
+	return this.manifest.name;
+});
+chrome.extension.__defineGetter__('manifest', function() {
+	if(!this._manifest) {
+		var xhtp = new XMLHttpRequest();
+        xhtp.open("GET", chrome.extension.getURL('/manifest.json'), false);
+        xhtp.send(null);
+        this._manifest = JSON.parse(xhtp.responseText);
+	}
+	return this._manifest;
+});
+var extension = chrome.extension;

@@ -1,4 +1,4 @@
-/* Blank Canvas Script Handler [http://blankcanvas.me/contact/]
+/* Blank Canvas Script Handler [http://blankcanvas.me/scripthandler/]
  * Copyright (c) 2009, 2010 Jerome Dane <http://blankcanvas.me/contact/>  
  * 
  * This file is part of the Blank Canvas Script Handler. See readme.md for
@@ -17,11 +17,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
- * Note: This file is a wrapper for the jQuery Javascript Library.
- *       See copyright notice below.
- * 
+ * Note: This file is just a wrapper for jQuery. See copyright info below.
+ *
  */
- 
 
 function getJqueryInstance() {
 	/*!

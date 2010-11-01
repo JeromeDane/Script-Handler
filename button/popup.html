@@ -1,5 +1,5 @@
 <!-- 
-/* Blank Canvas Script Handler [http://blankcanvas.me/contact/]
+/* Blank Canvas Script Handler [http://blankcanvas.me/scripthandler/]
  * Copyright (c) 2009, 2010 Jerome Dane <http://blankcanvas.me/contact/>  
  * 
  * This file is part of the Blank Canvas Script Handler. See readme.md for
@@ -22,9 +22,7 @@
 <html> 
 <head> 
 <script src="includes/jquery.js"></script>
-<script src="includes/database.js"></script>
-<script src="includes/common.js"></script>
-<script src="includes/script.js"></script>
+<script src="config.js"></script>
 <style>
 	body { font-family: Arial, sans-serif; 
 		font-size:small; white-space:nowrap;
@@ -59,11 +57,11 @@
 		});
 		try{ 
 			$('img.cog').attr('src', chrome.extension.getURL("images/cog.png"))
-			chrome.extension.sendRequest({name: 'getActiveScripts'}, function(scripts) {
+			chrome.extension.sendRequest(mainExtensionId, {name: 'getActiveScripts'}, function(scripts) {
 				$('#numActiveScripts').html(scripts.length > 0 ? scripts.length : 'No');
 				$('#numActiveScriptsPlural').html(scripts.length != 1 ? 's' : '');
 				for (var i = 0; i < scripts.length; i++) {
-					var script = getScriptById(scripts[i].id);
+					var script = scripts[i];
 					$('#activeScripts').append('<li>' + 
 						'<input id="enableToggle_' + script.id + '" type="checkbox" ' + (script.enabled ? 'checked="true"' : '') + '/> ' +
 						(script.website ? '<a href="' + script.website + '" target="_blank">' + script.name + '</a>' : script.name) +  
@@ -76,8 +74,7 @@
 					});
 					$('#edit_' + scripts[i].id).click(function() {
 						var id = this.id.match(/\d+/)[0];
-						localStorage.setItem('startScriptEdit', id);
-						openOptionsTab();
+						chrome.extension.sendRequest(mainExtensionId, {name: 'editScript', scriptId:id});
 					});
 					$('#delete_' + scripts[i].id).click(function() {
 						var id = this.id.match(/\d+/)[0];
@@ -87,7 +84,9 @@
 				$('img.edit').attr('src', chrome.extension.getURL("images/edit.png"))
 				$('img.delete').attr('src', chrome.extension.getURL("images/trash.png"))
 			});
-			$('#optionsLink').click(openOptionsTab);
+			$('#optionsLink').click(function() {
+				chrome.extension.sendRequest(mainExtensionId, {name: 'openOptions'}); 
+			});
 		} catch(e) { alert(e); }
 		$('#findScriptsLink').click(function() {
 			chrome.tabs.getSelected(null, function(tab) {
@@ -97,7 +96,7 @@
 				var matches = q.match(/\.(.+)$/); 
 				if(matches && matches[1].length > 3)
 					q = matches[1];
-				chrome.extension.sendRequest({name: 'openInTab', 
+				chrome.extension.sendRequest(mainExtensionId, {name: 'openInTab', 
 					src:'http://userscripts.org/scripts/search?q=' + q
 				});
 			});

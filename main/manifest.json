@@ -1,14 +1,11 @@
 {
+"update_url":"http://clients2.google.com/service/update2/crx",
 	"name": "Blank Canvas Script Handler",
-	"version": "0.0.15",
+	"version": "0.0.17",
 	"description": "User script manager with support for Greasemonkey functions",
 	"icons": { "128": "images/icon.png" },
 	"background_page": "background.html",
 	"options_page": "options.html",
-	"browser_action": {
-		"default_icon": "images/icon_small.png",
-		"popup": "popup.html"
-	},
 	"content_scripts": [{
 		"all_frames": true, 
 		"js": ["includes/jquery.js", "includes/content.js"],

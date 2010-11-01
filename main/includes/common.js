@@ -1,4 +1,4 @@
-/* Blank Canvas Script Handler [http://blankcanvas.me/contact/]
+/* Blank Canvas Script Handler [http://blankcanvas.me/scripthandler/]
  * Copyright (c) 2009, 2010 Jerome Dane <http://blankcanvas.me/contact/>  
  * 
  * This file is part of the Blank Canvas Script Handler. See readme.md for
@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
 var $ = getJqueryInstance();
 try {
 
@@ -29,7 +28,10 @@ try {
 			fields: ['key', 'url', 'data', 'status', 'loaded', 'headers']
 		}
 	]);
-	
+	function editScript(scriptId) {
+		localStorage.setItem('startScriptEdit', scriptId);
+		openOptionsTab();
+	}
 	function convertCdataStrings(source) { 
 		var matches = source.match(/<><!\[CDATA\[((.|\n|\r)+?)\]\]><\/>(\.to(XML)?String\(\))?/g)
 		if(matches) {
@@ -44,6 +46,24 @@ try {
 		}
 		return source;
 	}	
+	function getActiveScripts(sendResponse) {
+		chrome.tabs.getSelected(null, function(tab) {
+			var scripts = typeof(activeScripts[tab.id]) != 'undefined' ? activeScripts[tab.id] : [];
+			sendResponse(scripts);
+		});
+	}
+	function getNumActiveScripts(callback) {
+		chrome.tabs.getSelected(null, function(tab) {
+			activeScripts[tab.id] = typeof(activeScripts[tab.id]) != 'undefined' ? activeScripts[tab.id] : [];
+			var numActive = activeScripts[tab.id].length;
+			callback(numActive);
+		});
+	}
+	function toggleScriptEnabled(id) {
+		var script = getScriptById(id);
+		script.enabled = script.enabled ? false : true;
+		script.saveRecord();
+	}
 	function sanitizeSource(source) {
 		source = source.replace(/uneval\((.*?)\)/, "'(' + JSON.stringify($1) + ')'")
 		source = source.replace(/\.new/g, '.new_');		// chrome can't handle the "new" keyword as a property
